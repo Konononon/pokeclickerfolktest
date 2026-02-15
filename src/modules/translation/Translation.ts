@@ -9,6 +9,7 @@ import memoize from '../utilities/memoize';
 import Language from './Language';
 import { PokemonNameType } from '../pokemons/PokemonNameType';
 import Notifier from '../notifications/Notifier';
+import AutoKoreanTranslator from './AutoKoreanTranslator';
 
 export type TranslationNamespace = 'pokemon' | 'logbook' | 'settings' | 'questlines';
 export type TranslationVar = string | number | PokemonNameType;
@@ -27,6 +28,7 @@ const getTranslatedMemoResolver = (
 };
 export default class Translate {
     private languageUpdated: Observable<number>;
+    private autoKoreanTranslator: AutoKoreanTranslator;
     // For easy exporting of translation keys/values from dev builds
     public cachedTranslationDefaults?: Record<string, TranslationVars>; // { namespace: { key: defaultValue }}
 
@@ -47,6 +49,7 @@ export default class Translate {
     constructor(languageSetting: Setting<Language>) {
         const namespaces: TranslationNamespace[] = ['pokemon', 'logbook', 'settings', 'questlines'];
         this.languageUpdated = ko.observable(0);
+        this.autoKoreanTranslator = new AutoKoreanTranslator(languageSetting);
 
         let translationsUrlOverride = new URLSearchParams(window.location.search).get('translations');
         if (translationsUrlOverride?.startsWith('github:')) {
